@@ -3,11 +3,11 @@ package com.electricitybilling.electricity_billing_system_project.Controller;
 import com.electricitybilling.electricity_billing_system_project.Payload.CustomerDto;
 import com.electricitybilling.electricity_billing_system_project.Service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
  * @author - rohit
@@ -23,9 +23,22 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public CustomerDto register(@Valid @RequestBody CustomerDto customerDto){
+//        CustomerDto customer = customerService.registerCustomer(customerDto);
+//        return customer;
+//    }
+
     @PostMapping
-    public CustomerDto register(@RequestBody CustomerDto customerDto){
+    public ResponseEntity<CustomerDto> register(@Valid @RequestBody CustomerDto customerDto){
         CustomerDto customer = customerService.registerCustomer(customerDto);
-        return customer;
+        return new ResponseEntity<>(customer, HttpStatus.CREATED);
     }
+
+//    @PostMapping
+//    public ResponseEntity<CustomerDto> register(@Valid @RequestBody CustomerDto customerDto){
+//        CustomerDto customer = customerService.registerCustomer(customerDto);
+//        return ResponseEntity.ok(customer);
+//    }
 }
