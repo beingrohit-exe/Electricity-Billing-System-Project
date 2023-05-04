@@ -23,22 +23,10 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-//    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public CustomerDto register(@Valid @RequestBody CustomerDto customerDto){
-//        CustomerDto customer = customerService.registerCustomer(customerDto);
-//        return customer;
-//    }
-
     @PostMapping
     public ResponseEntity<CustomerDto> register(@Valid @RequestBody CustomerDto customerDto){
         CustomerDto customer = customerService.registerCustomer(customerDto);
         return new ResponseEntity<>(customer, HttpStatus.CREATED);
     }
 
-//    @PostMapping
-//    public ResponseEntity<CustomerDto> register(@Valid @RequestBody CustomerDto customerDto){
-//        CustomerDto customer = customerService.registerCustomer(customerDto);
-//        return ResponseEntity.ok(customer);
-//    }
 }
