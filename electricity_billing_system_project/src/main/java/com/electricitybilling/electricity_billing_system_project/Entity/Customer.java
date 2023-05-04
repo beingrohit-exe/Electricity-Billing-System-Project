@@ -34,8 +34,6 @@ public class Customer {
     private String email;
     private String mobileNumber;
 
-    //We have to use Emumerated annotation if want to store ours
-    // enums as it is other it will stored as Ordinal type(0,1,......)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 }
