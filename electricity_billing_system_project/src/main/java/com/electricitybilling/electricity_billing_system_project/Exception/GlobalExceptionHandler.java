@@ -29,4 +29,11 @@ public class GlobalExceptionHandler {
         HttpStatus statusCode = exception.getStatusCode();
         return new ResponseEntity<>(new ApiResponse(message, false), statusCode);
     }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<ApiResponse> customerNotFoundExceptionHandler(CustomerNotFoundException exception){
+        String message = exception.getMessage();
+        HttpStatus statusCode = HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(new ApiResponse(message, false), statusCode);
+    }
 }

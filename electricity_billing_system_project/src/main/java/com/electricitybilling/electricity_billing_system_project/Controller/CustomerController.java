@@ -1,13 +1,18 @@
 package com.electricitybilling.electricity_billing_system_project.Controller;
 
+import com.electricitybilling.electricity_billing_system_project.Payload.ApiResponse;
 import com.electricitybilling.electricity_billing_system_project.Payload.CustomerDto;
 import com.electricitybilling.electricity_billing_system_project.Service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
+import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * @author - rohit
@@ -29,4 +34,34 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.CREATED);
     }
 
+    @GetMapping("/{customerId}")
+    public ResponseEntity<CustomerDto> getById(@PathVariable Long customerId){
+        return ResponseEntity.ok(customerService.getById(customerId));
+    }
+
+    public Supplier<List<CustomerDto>> getAll = () -> customerService.getAllCustomers();
+
+    @GetMapping
+    public ResponseEntity<?> allCustomers(){
+        return ResponseEntity.ok(getAll.get());
+    }
+
+    @DeleteMapping("/{customerId}")
+    public ApiResponse deleteById(@PathVariable Long customerId){
+        return customerService.deleteCustomer(customerId);
+    }
+
+    @PutMapping("/{customerId}")
+    public ResponseEntity<?> updateCustomer(@PathVariable Long customerId, @RequestBody CustomerDto customerDto){
+        CustomerDto customer = customerService.updateCustomer(customerDto, customerId);
+        return ResponseEntity.created(getUri.get()).body(customer);
+    }
+
+    private Supplier<URI> getUri = () -> ServletUriComponentsBuilder.fromCurrentContextPath().path("/customer").host("www.google.com").port("567").build().toUri();
+
+    // Alt + Enter -> Extra Features
+    // Ctrl/Command + Alt + V -> Assign to new local variable
+    // --------"--------- + L -> Format Code
+    // --------"--------- + O -> Remove unused imports
+    // Alt + Insert -> Generate
 }
