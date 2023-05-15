@@ -27,13 +27,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> apiException(ApiException exception){
         String message = exception.getMessage();
         HttpStatus statusCode = exception.getStatusCode();
-        return new ResponseEntity<>(new ApiResponse(message, false), statusCode);
+        return new ResponseEntity<>(ApiResponse.builder().message(message).isError(true).build(), statusCode);
     }
 
     @ExceptionHandler(CustomerNotFoundException.class)
     public ResponseEntity<ApiResponse> customerNotFoundExceptionHandler(CustomerNotFoundException exception){
         String message = exception.getMessage();
         HttpStatus statusCode = HttpStatus.BAD_REQUEST;
-        return new ResponseEntity<>(new ApiResponse(message, false), statusCode);
+        return new ResponseEntity<>(ApiResponse.builder().message(message).isError(true).build(), statusCode);
     }
 }
