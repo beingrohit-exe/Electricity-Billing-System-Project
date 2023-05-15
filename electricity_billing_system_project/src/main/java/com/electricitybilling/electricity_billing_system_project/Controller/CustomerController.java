@@ -2,6 +2,7 @@ package com.electricitybilling.electricity_billing_system_project.Controller;
 
 import com.electricitybilling.electricity_billing_system_project.Payload.ApiResponse;
 import com.electricitybilling.electricity_billing_system_project.Payload.CustomerDto;
+import com.electricitybilling.electricity_billing_system_project.Payload.PagedResponse;
 import com.electricitybilling.electricity_billing_system_project.Service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,11 +40,10 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.getById(customerId));
     }
 
-    public Supplier<List<CustomerDto>> getAll = () -> customerService.getAllCustomers();
-
     @GetMapping
-    public ResponseEntity<?> allCustomers(){
-        return ResponseEntity.ok(getAll.get());
+    public ResponseEntity<?> allCustomers(@RequestParam(name = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+    @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize){
+        return ResponseEntity.ok(customerService.getAllCustomers(pageNumber, pageSize));
     }
 
     @DeleteMapping("/{customerId}")

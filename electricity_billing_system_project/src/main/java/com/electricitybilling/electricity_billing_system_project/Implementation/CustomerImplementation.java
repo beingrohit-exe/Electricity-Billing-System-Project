@@ -5,10 +5,15 @@ import com.electricitybilling.electricity_billing_system_project.Exception.ApiEx
 import com.electricitybilling.electricity_billing_system_project.Exception.CustomerNotFoundException;
 import com.electricitybilling.electricity_billing_system_project.Payload.ApiResponse;
 import com.electricitybilling.electricity_billing_system_project.Payload.CustomerDto;
+import com.electricitybilling.electricity_billing_system_project.Payload.PagedResponse;
 import com.electricitybilling.electricity_billing_system_project.Repository.CustomerRepository;
 import com.electricitybilling.electricity_billing_system_project.Service.CustomerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssemblerArgumentResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -21,7 +26,8 @@ import java.util.function.Supplier;
 /**
  * @author - rohit
  * @project - electricity_billing_system_project
- * @package - com.electricitybilling.electricity_billing_system_project.Implementation
+ * @package -
+ *          com.electricitybilling.electricity_billing_system_project.Implementation
  * @created_on - April 30-2023
  */
 
@@ -34,47 +40,74 @@ public class CustomerImplementation implements CustomerService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public Supplier<List<Customer>> allCustomers = () -> customerRepository.findAll();
+    // public Supplier<List<Customer>> allCustomers = () ->
+    // customerRepository.findAll();
 
-
-    //Curl -> curl -X POST http://localhost:8000/customer -H "Content-Type:application/json" -d "{\"firstName\":\"Rohit\",\"lastName\":\"Parihar\",\"email\":\"rohit@gmail.com\",\"mobileNumber\":\"78755455\",\"gender\":\"MALE\"}"
-    //Curl Powershell ->  curl -X POST 'http://localhost:8000/customer' -H 'Content-Type:application/json' -d '{\"firstName\":\"Rohit\",\"lastName\":\"Parihar\",\"email\":\"rohit@gmail.com\",\"mobileNumber\":\"78755455\",\"gender\":\"MALE\"}'
+    // Curl -> curl -X POST http://localhost:8000/customer -H
+    // "Content-Type:application/json" -d
+    // "{\"firstName\":\"Rohit\",\"lastName\":\"Parihar\",\"email\":\"rohit@gmail.com\",\"mobileNumber\":\"78755455\",\"gender\":\"MALE\"}"
+    // Curl Powershell -> curl -X POST 'http://localhost:8000/customer' -H
+    // 'Content-Type:application/json' -d
+    // '{\"firstName\":\"Rohit\",\"lastName\":\"Parihar\",\"email\":\"rohit@gmail.com\",\"mobileNumber\":\"78755455\",\"gender\":\"MALE\"}'
     @Override
     public CustomerDto registerCustomer(CustomerDto customerDto) {
 
-        //Checking if already Exists
-        if (customerRepository.existsByEmailEqualsIgnoreCase(customerDto.getEmail())){
-            //throw new ApiException("Email already Exists in database", HttpStatus.NOT_ACCEPTABLE);
+        // Checking if already Exists
+        if (customerRepository.existsByEmailEqualsIgnoreCase(customerDto.getEmail())) {
+            // throw new ApiException("Email already Exists in database",
+            // HttpStatus.NOT_ACCEPTABLE);
             throw new CustomerNotFoundException("Email already Exists in database");
         }
 
         Customer customer = modelMapper.map(customerDto, Customer.class);
 
-        //Entry to database for Customer
+        // Entry to database for Customer
         Customer savedCustomer = customerRepository.save(customer);
 
         CustomerDto customer2 = modelMapper.map(savedCustomer, CustomerDto.class);
 
-        //Returning CustomerDto
+        // Returning CustomerDto
         return customer2;
     }
 
     @Override
     public CustomerDto getById(Long customerId) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(()-> new CustomerNotFoundException("Customer", "Id", customerId));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer", "Id", customerId));
         return this.modelMapper.map(customer, CustomerDto.class);
     }
 
+    // @Override
+    // public List<CustomerDto> getAllCustomers() {
+    // List<Customer> customers = allCustomers.get();
+    // List<CustomerDto> customerDtos = new ArrayList<>();
+    // for (Customer a : customers){
+    // CustomerDto customerDto = modelMapper.map(a, CustomerDto.class);
+    // customerDtos.add(customerDto);
+    // }
+    // return customerDtos;
+    // }
+
     @Override
-    public List<CustomerDto> getAllCustomers() {
-        List<Customer> customers = allCustomers.get();
+    public PagedResponse getAllCustomers(Integer pageNumber, Integer pagesize) {
+        Pageable page = PageRequest.of(pageNumber, pagesize);
+        Page<Customer> pageContent = customerRepository.findAll(page);
+        List<Customer> customers = pageContent.getContent();
         List<CustomerDto> customerDtos = new ArrayList<>();
-        for (Customer a : customers){
+        for (Customer a : customers) {
             CustomerDto customerDto = modelMapper.map(a, CustomerDto.class);
             customerDtos.add(customerDto);
         }
-        return customerDtos;
+
+        PagedResponse<CustomerDto> pagedResponse = new PagedResponse<CustomerDto>();
+        pagedResponse.setContent(customerDtos);
+        pagedResponse.setPageNumber(pageContent.getNumber());
+        pagedResponse.setPageSize(pageContent.getSize());
+        pagedResponse.setTotalElements(pageContent.getTotalElements());
+        pagedResponse.setTotalPages(pageContent.getTotalPages());
+        pagedResponse.setIsFirstPage(pageContent.isFirst());
+        pagedResponse.setIsLastPage(pageContent.isLast());
+        return pagedResponse;
     }
 
     @Override
@@ -98,6 +131,5 @@ public class CustomerImplementation implements CustomerService {
         customerRepository.delete(customer);
         return new ApiResponse("Deleted", true);
     }
-
 
 }
