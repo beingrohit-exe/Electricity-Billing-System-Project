@@ -1,9 +1,7 @@
 package com.electricitybilling.electricity_billing_system_project.Payload;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
 
 /**
  * @author - rohit
@@ -16,8 +14,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse {
 
     private String message;
     private Boolean isSuccess;
+    private Boolean isApplied;
+    private Boolean isDeleted;
+    private Boolean isUpdated;
+    private Boolean isError;
 }

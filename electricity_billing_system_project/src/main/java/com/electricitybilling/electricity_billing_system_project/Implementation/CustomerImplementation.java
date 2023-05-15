@@ -129,7 +129,11 @@ public class CustomerImplementation implements CustomerService {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer", "Id", customerId));
         customerRepository.delete(customer);
-        return new ApiResponse("Deleted", true);
+        return ApiResponse
+                .builder()
+                .message("Deleted")
+                .isDeleted(Boolean.TRUE)
+                .build();
     }
 
 }
