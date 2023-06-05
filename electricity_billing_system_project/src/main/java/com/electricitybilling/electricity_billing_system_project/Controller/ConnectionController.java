@@ -19,4 +19,9 @@ public class ConnectionController {
     public ResponseEntity<?> applyConnection(@RequestBody ConnectionDto connectionDto, @PathVariable Long customerId){
         return ResponseEntity.ok(connectionService.applyConnection(connectionDto, customerId));
     }
+
+    @GetMapping(produces = "application/json")
+    public ResponseEntity<?> getConnection(@RequestParam(value = "connectionid", required = true) Integer connectionId){
+        return ResponseEntity.ok(connectionService.getConnection(connectionId));
+    }
 }

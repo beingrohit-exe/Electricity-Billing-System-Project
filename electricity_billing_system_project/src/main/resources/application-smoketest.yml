@@ -1,0 +1,4 @@
+port: 7000
+
+database: smoketest
+type: create-drop
