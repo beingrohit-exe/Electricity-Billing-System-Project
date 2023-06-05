@@ -57,7 +57,9 @@ public class ConnectionImplementation implements ConnectionService<Object> {
 
     @Override
     public Object getConnection(Integer connectionId) {
-        return null;
+        Connection connection = connectionRepository.findById(connectionId)
+                .orElseThrow(() -> new CustomerNotFoundException("Connection", "Connection Id", connectionId));
+        return connection;
     }
 
     @Override
